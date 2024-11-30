@@ -11,7 +11,7 @@ async function bootstrap() {
     transport: Transport.GRPC,
     options: {
       url: `0.0.0.0:${port}`,
-      package: 'tarot_reader',
+      package: 'tarot_reading',
       protoPath: [
         join(__dirname, 'proto/card.proto'),
         join(__dirname, 'proto/tarot.proto'),

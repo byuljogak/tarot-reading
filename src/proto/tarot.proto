@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package tarot_reader;
+package tarot_reading;
 
 service TarotService {
   rpc ReadTarot(ReadTarotRequest) returns (ReadTarotResponse) {}

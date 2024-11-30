@@ -8,7 +8,7 @@
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
-export const protobufPackage = "tarot_reader";
+export const protobufPackage = "tarot_reading";
 
 export interface RequestCardContent {
   keywords: string[];
@@ -150,7 +150,7 @@ export interface DeleteCardContentResponse {
   message: string;
 }
 
-export const TAROT_READER_PACKAGE_NAME = "tarot_reader";
+export const TAROT_READING_PACKAGE_NAME = "tarot_reading";
 
 export interface CardServiceClient {
   addCard(request: AddCardRequest): Observable<AddCardResponse>;
