@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package tarot_reader;
+
+service TarotService {
+  rpc ReadTarot(ReadTarotRequest) returns (ReadTarotResponse) {}
+}
+
+message CardContent {
+  repeated string keywords = 1;
+  string advice = 2;
+  string created_at = 3;
+}
+message Card {
+  string title = 1;
+  string title_kr = 2;
+  string created_at = 3;
+  CardContent contents = 4;
+}
+
+message ReadTarotRequest {}
+message ReadTarotResponse {
+  string message = 1;
+  message Data { Card card = 2; }
+  Data data = 2;
+}

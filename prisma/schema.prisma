@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  title      String        @unique
+  title_kr   String        @unique
+  created_at DateTime      @default(now())
+  contents   CardContent[]
+
+  @@map("cards")
+}
+
+model CardContent {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  keywords   String[]
+  advice     String
+  created_at DateTime @default(now())
+  Card       Card?    @relation(fields: [cardId], references: [id])
+  cardId     String?  @db.ObjectId
+
+  @@map("card_contents")
+}

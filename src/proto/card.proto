@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package tarot_reader;
+
+service CardService {
+  rpc AddCard(AddCardRequest) returns (AddCardResponse) {}
+  rpc AddCardContent(AddCardContentRequest) returns (AddCardContentResponse) {}
+  rpc AddCardContents(AddCardContentsRequest)
+      returns (AddCardContentsResponse) {}
+
+  rpc GetCardByTitle(GetCardByTitleRequest) returns (GetCardByTitleResponse) {}
+  rpc GetCardContents(GetCardContentsRequest)
+      returns (GetCardContentsResponse) {}
+  rpc GetCardContentById(GetCardContentByIdRequest)
+      returns (GetCardContentByIdResponse) {}
+
+  rpc UpdateCardTitle(UpdateCardTitleRequest)
+      returns (UpdateCardTitleResponse) {}
+  rpc UpdateCardContent(UpdateCardContentRequest)
+      returns (UpdateCardContentResponse) {}
+
+  rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {}
+  rpc DeleteCardContent(DeleteCardContentRequest)
+      returns (DeleteCardContentResponse) {}
+}
+
+message RequestCardContent {
+  repeated string keywords = 1;
+  string advice = 2;
+}
+message ResponseCardContent {
+  string id = 1;
+  repeated string keywords = 2;
+  string advice = 3;
+  string created_at = 4;
+}
+message ResponseCard {
+  string id = 1;
+  string title = 2;
+  string title_kr = 3;
+  string created_at = 4;
+}
+
+message AddCardRequest {
+  string title = 1;
+  string title_kr = 2;
+}
+message AddCardResponse {
+  string message = 1;
+  message Data { ResponseCard card = 1; }
+  Data data = 2;
+}
+
+message AddCardContentRequest {
+  string card_id = 1;
+  RequestCardContent card_content = 2;
+}
+message AddCardContentResponse {
+  string message = 1;
+  message Data { ResponseCardContent card_content = 1; }
+  Data data = 2;
+}
+
+message AddCardContentsRequest {
+  string card_id = 1;
+  repeated RequestCardContent card_contents = 2;
+}
+message AddCardContentsResponse { string message = 1; }
+
+message GetCardByTitleRequest { string title = 1; }
+message GetCardByTitleResponse {
+  string message = 1;
+  message Data { ResponseCard card = 1; }
+  Data data = 2;
+}
+
+message GetCardContentsRequest { string card_id = 1; }
+message GetCardContentsResponse {
+  string message = 1;
+  message Data { repeated ResponseCardContent card_contents = 1; }
+  Data data = 2;
+}
+
+message GetCardContentByIdRequest { string card_content_id = 1; }
+message GetCardContentByIdResponse {
+  string message = 1;
+  message Data { ResponseCardContent card_content = 1; }
+  Data data = 2;
+}
+
+message UpdateCardTitleRequest {
+  string card_id = 1;
+  optional string title = 2;
+  optional string title_kr = 3;
+}
+message UpdateCardTitleResponse {
+  string message = 1;
+  message Data { ResponseCard card = 1; }
+  Data data = 2;
+}
+
+message UpdateCardContentRequest {
+  string cardContentId = 1;
+  RequestCardContent card_content = 2;
+}
+message UpdateCardContentResponse {
+  string message = 1;
+  message Data { ResponseCardContent card_content = 1; }
+  Data data = 2;
+}
+
+message DeleteCardRequest { string title = 1; }
+message DeleteCardResponse { string message = 1; }
+
+message DeleteCardContentRequest { string cardContentId = 1; }
+message DeleteCardContentResponse { string message = 1; }
