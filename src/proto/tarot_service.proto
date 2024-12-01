@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package byuljogak.tarot.reader;
+option java_package = "com.byuljogak.tarot.reader";
+
+import "card.proto";
+
+service TarotService {
+  rpc ReadTarot(ReadTarotRequest) returns (ReadTarotResponse) {}
+}
+
+message ReadTarotRequest {}
+message ReadTarotResponse {
+  Card card = 1;
+  CardContent card_contents = 2;
+}

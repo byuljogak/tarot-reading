@@ -48,7 +48,7 @@ export class CardService {
     });
   }
 
-  async getCard({ title }: { title: string }) {
+  async readCard({ title }: { title: string }) {
     return this.prisma.card.findUnique({
       where: {
         title,
@@ -56,11 +56,11 @@ export class CardService {
     });
   }
 
-  async getCards() {
+  async readAllCards() {
     return this.prisma.card.findMany();
   }
 
-  async getCardContent({ cardContentId }: { cardContentId: string }) {
+  async readCardContent({ cardContentId }: { cardContentId: string }) {
     return this.prisma.cardContent.findUnique({
       where: {
         id: cardContentId,
@@ -68,7 +68,7 @@ export class CardService {
     });
   }
 
-  async getCardContents({ cardId }: { cardId: string }) {
+  async readCardContents({ cardId }: { cardId: string }) {
     return this.prisma.cardContent.findMany({
       where: {
         cardId,
@@ -77,21 +77,21 @@ export class CardService {
   }
 
   async updateCardTitle({
-    targetTitle,
+    cardId,
     title,
-    title_kr,
+    titleKr,
   }: {
-    targetTitle: string;
+    cardId: string;
     title?: string;
-    title_kr?: string;
+    titleKr?: string;
   }) {
     return this.prisma.card.update({
       where: {
-        title: targetTitle,
+        id: cardId,
       },
       data: {
         title,
-        title_kr,
+        title_kr: titleKr,
       },
     });
   }
@@ -116,10 +116,10 @@ export class CardService {
     });
   }
 
-  async deleteCard({ title }: { title: string }) {
+  async deleteCard({ id }: { id: string }) {
     return this.prisma.card.delete({
       where: {
-        title,
+        title: id,
       },
     });
   }

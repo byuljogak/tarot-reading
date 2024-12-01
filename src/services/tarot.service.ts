@@ -22,10 +22,10 @@ export class TarotService {
     const maxCardContents =
       this.config.get<EnvConfig['maxCardContents']>('maxCardContents');
 
-    const card = await this.cardService.getCards().then((cards) => {
+    const card = await this.cardService.readAllCards().then((cards) => {
       return cards[Math.floor(Math.random() * cards.length)];
     });
-    const existingCardContents = await this.cardService.getCardContents({
+    const existingCardContents = await this.cardService.readCardContents({
       cardId: card.id,
     });
 
@@ -35,8 +35,6 @@ export class TarotService {
     const modifiedNewCardChance = newCardChance * (1 - maxExistingCardRatio);
 
     const chance = Math.random();
-    console.log(chance);
-    console.log(modifiedNewCardChance);
 
     // If there are no existing contents or the random number is less than the modified chance, generate a new content
     if (existingCardContents.length === 0 || chance < modifiedNewCardChance) {

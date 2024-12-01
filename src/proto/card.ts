@@ -2,242 +2,25 @@
 // versions:
 //   protoc-gen-ts_proto  v2.4.2
 //   protoc               v5.28.2
-// source: src/proto/card.proto
+// source: card.proto
 
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { Timestamp } from "./google/protobuf/timestamp.js";
 
-export const protobufPackage = "tarot_reading";
+export const protobufPackage = "byuljogak.tarot.reader";
 
-export interface RequestCardContent {
+export interface CardContent {
+  id?: string | undefined;
   keywords: string[];
   advice: string;
+  createdAt: Timestamp | undefined;
 }
 
-export interface ResponseCardContent {
-  id: string;
-  keywords: string[];
-  advice: string;
-  createdAt: string;
-}
-
-export interface ResponseCard {
-  id: string;
+export interface Card {
+  id?: string | undefined;
   title: string;
   titleKr: string;
-  createdAt: string;
+  createdAt: Timestamp | undefined;
 }
 
-export interface AddCardRequest {
-  title: string;
-  titleKr: string;
-}
-
-export interface AddCardResponse {
-  message: string;
-  data: AddCardResponse_Data | undefined;
-}
-
-export interface AddCardResponse_Data {
-  card: ResponseCard | undefined;
-}
-
-export interface AddCardContentRequest {
-  cardId: string;
-  cardContent: RequestCardContent | undefined;
-}
-
-export interface AddCardContentResponse {
-  message: string;
-  data: AddCardContentResponse_Data | undefined;
-}
-
-export interface AddCardContentResponse_Data {
-  cardContent: ResponseCardContent | undefined;
-}
-
-export interface AddCardContentsRequest {
-  cardId: string;
-  cardContents: RequestCardContent[];
-}
-
-export interface AddCardContentsResponse {
-  message: string;
-}
-
-export interface GetCardByTitleRequest {
-  title: string;
-}
-
-export interface GetCardByTitleResponse {
-  message: string;
-  data: GetCardByTitleResponse_Data | undefined;
-}
-
-export interface GetCardByTitleResponse_Data {
-  card: ResponseCard | undefined;
-}
-
-export interface GetCardContentsRequest {
-  cardId: string;
-}
-
-export interface GetCardContentsResponse {
-  message: string;
-  data: GetCardContentsResponse_Data | undefined;
-}
-
-export interface GetCardContentsResponse_Data {
-  cardContents: ResponseCardContent[];
-}
-
-export interface GetCardContentByIdRequest {
-  cardContentId: string;
-}
-
-export interface GetCardContentByIdResponse {
-  message: string;
-  data: GetCardContentByIdResponse_Data | undefined;
-}
-
-export interface GetCardContentByIdResponse_Data {
-  cardContent: ResponseCardContent | undefined;
-}
-
-export interface UpdateCardTitleRequest {
-  cardId: string;
-  title?: string | undefined;
-  titleKr?: string | undefined;
-}
-
-export interface UpdateCardTitleResponse {
-  message: string;
-  data: UpdateCardTitleResponse_Data | undefined;
-}
-
-export interface UpdateCardTitleResponse_Data {
-  card: ResponseCard | undefined;
-}
-
-export interface UpdateCardContentRequest {
-  cardContentId: string;
-  cardContent: RequestCardContent | undefined;
-}
-
-export interface UpdateCardContentResponse {
-  message: string;
-  data: UpdateCardContentResponse_Data | undefined;
-}
-
-export interface UpdateCardContentResponse_Data {
-  cardContent: ResponseCardContent | undefined;
-}
-
-export interface DeleteCardRequest {
-  title: string;
-}
-
-export interface DeleteCardResponse {
-  message: string;
-}
-
-export interface DeleteCardContentRequest {
-  cardContentId: string;
-}
-
-export interface DeleteCardContentResponse {
-  message: string;
-}
-
-export const TAROT_READING_PACKAGE_NAME = "tarot_reading";
-
-export interface CardServiceClient {
-  addCard(request: AddCardRequest): Observable<AddCardResponse>;
-
-  addCardContent(request: AddCardContentRequest): Observable<AddCardContentResponse>;
-
-  addCardContents(request: AddCardContentsRequest): Observable<AddCardContentsResponse>;
-
-  getCardByTitle(request: GetCardByTitleRequest): Observable<GetCardByTitleResponse>;
-
-  getCardContents(request: GetCardContentsRequest): Observable<GetCardContentsResponse>;
-
-  getCardContentById(request: GetCardContentByIdRequest): Observable<GetCardContentByIdResponse>;
-
-  updateCardTitle(request: UpdateCardTitleRequest): Observable<UpdateCardTitleResponse>;
-
-  updateCardContent(request: UpdateCardContentRequest): Observable<UpdateCardContentResponse>;
-
-  deleteCard(request: DeleteCardRequest): Observable<DeleteCardResponse>;
-
-  deleteCardContent(request: DeleteCardContentRequest): Observable<DeleteCardContentResponse>;
-}
-
-export interface CardServiceController {
-  addCard(request: AddCardRequest): Promise<AddCardResponse> | Observable<AddCardResponse> | AddCardResponse;
-
-  addCardContent(
-    request: AddCardContentRequest,
-  ): Promise<AddCardContentResponse> | Observable<AddCardContentResponse> | AddCardContentResponse;
-
-  addCardContents(
-    request: AddCardContentsRequest,
-  ): Promise<AddCardContentsResponse> | Observable<AddCardContentsResponse> | AddCardContentsResponse;
-
-  getCardByTitle(
-    request: GetCardByTitleRequest,
-  ): Promise<GetCardByTitleResponse> | Observable<GetCardByTitleResponse> | GetCardByTitleResponse;
-
-  getCardContents(
-    request: GetCardContentsRequest,
-  ): Promise<GetCardContentsResponse> | Observable<GetCardContentsResponse> | GetCardContentsResponse;
-
-  getCardContentById(
-    request: GetCardContentByIdRequest,
-  ): Promise<GetCardContentByIdResponse> | Observable<GetCardContentByIdResponse> | GetCardContentByIdResponse;
-
-  updateCardTitle(
-    request: UpdateCardTitleRequest,
-  ): Promise<UpdateCardTitleResponse> | Observable<UpdateCardTitleResponse> | UpdateCardTitleResponse;
-
-  updateCardContent(
-    request: UpdateCardContentRequest,
-  ): Promise<UpdateCardContentResponse> | Observable<UpdateCardContentResponse> | UpdateCardContentResponse;
-
-  deleteCard(
-    request: DeleteCardRequest,
-  ): Promise<DeleteCardResponse> | Observable<DeleteCardResponse> | DeleteCardResponse;
-
-  deleteCardContent(
-    request: DeleteCardContentRequest,
-  ): Promise<DeleteCardContentResponse> | Observable<DeleteCardContentResponse> | DeleteCardContentResponse;
-}
-
-export function CardServiceControllerMethods() {
-  return function (constructor: Function) {
-    const grpcMethods: string[] = [
-      "addCard",
-      "addCardContent",
-      "addCardContents",
-      "getCardByTitle",
-      "getCardContents",
-      "getCardContentById",
-      "updateCardTitle",
-      "updateCardContent",
-      "deleteCard",
-      "deleteCardContent",
-    ];
-    for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("CardService", method)(constructor.prototype[method], method, descriptor);
-    }
-    const grpcStreamMethods: string[] = [];
-    for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("CardService", method)(constructor.prototype[method], method, descriptor);
-    }
-  };
-}
-
-export const CARD_SERVICE_NAME = "CardService";
+export const BYULJOGAK_TAROT_READER_PACKAGE_NAME = "byuljogak.tarot.reader";

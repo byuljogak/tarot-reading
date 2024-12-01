@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package byuljogak.tarot.reader;
+option java_package = "com.byuljogak.tarot.reader";
+
+import "card.proto";
+
+service CardService {
+  rpc CreateCard(CreateCardRequest) returns (CreateCardResponse) {}
+  rpc CreateCardContent(CreateCardContentRequest)
+      returns (CreateCardContentResponse) {}
+
+  rpc ReadCard(ReadCardRequest) returns (ReadCardResponse) {}
+
+  rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse) {}
+  rpc UpdateCardContent(UpdateCardContentRequest)
+      returns (UpdateCardContentResponse) {}
+
+  rpc DeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {}
+  rpc DeleteCardContent(DeleteCardContentRequest)
+      returns (DeleteCardContentResponse) {}
+}
+
+message CreateCardRequest {
+  string title = 1;
+  string title_kr = 2;
+}
+message CreateCardResponse { Card card = 1; }
+
+message CreateCardContentRequest {
+  string card_id = 1;
+  repeated string keywords = 2;
+  string advice = 3;
+}
+message CreateCardContentResponse { CardContent card_content = 1; }
+
+message ReadCardRequest { string title = 1; }
+message ReadCardResponse { 
+  Card card = 1;
+  repeated CardContent card_contents = 2;
+}
+
+message UpdateCardRequest {
+  string id = 1;
+  optional string title = 2;
+  optional string title_kr = 3;
+}
+message UpdateCardResponse { Card card = 1; }
+
+message UpdateCardContentRequest {
+  string id = 1;
+  repeated string keywords = 2;
+  optional string advice = 3;
+}
+message UpdateCardContentResponse { CardContent card_content = 1; }
+
+message DeleteCardRequest { string id = 1; }
+message DeleteCardResponse { }
+
+message DeleteCardContentRequest { string id = 1; }
+message DeleteCardContentResponse { }

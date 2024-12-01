@@ -1,29 +1,24 @@
-import { Body, Controller } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
-  AddCardContentRequest,
-  AddCardContentResponse,
-  AddCardContentsRequest,
-  AddCardContentsResponse,
-  AddCardRequest,
-  AddCardResponse,
   CARD_SERVICE_NAME,
   CardServiceController,
+  CreateCardContentRequest,
+  CreateCardContentResponse,
+  CreateCardRequest,
+  CreateCardResponse,
   DeleteCardContentRequest,
   DeleteCardContentResponse,
   DeleteCardRequest,
   DeleteCardResponse,
-  GetCardByTitleRequest,
-  GetCardByTitleResponse,
-  GetCardContentByIdRequest,
-  GetCardContentByIdResponse,
-  GetCardContentsRequest,
-  GetCardContentsResponse,
+  ReadCardRequest,
+  ReadCardResponse,
   UpdateCardContentRequest,
   UpdateCardContentResponse,
-  UpdateCardTitleRequest,
-  UpdateCardTitleResponse,
-} from 'src/proto/card';
+  UpdateCardRequest,
+  UpdateCardResponse,
+} from 'src/proto/card_service';
+import { Timestamp } from 'src/proto/google/protobuf/timestamp';
 import { CardService } from 'src/services/card.service';
 
 @Controller()
@@ -31,212 +26,146 @@ export class CardController implements CardServiceController {
   constructor(private readonly cardService: CardService) {}
 
   @GrpcMethod(CARD_SERVICE_NAME)
-  async addCard(@Body() request: AddCardRequest): Promise<AddCardResponse> {
-    return this.cardService
-      .createCard({
-        title: request.title,
-        titleKr: request.titleKr,
-      })
-      .then((result) => {
-        const response: AddCardResponse = {
-          message: 'Card added successfully',
-          data: {
-            card: {
-              id: result.id,
-              title: result.title,
-              titleKr: result.title_kr,
-              createdAt: result.created_at.toISOString(),
-            },
-          },
-        };
-        return response;
-      });
-  }
-
-  @GrpcMethod(CARD_SERVICE_NAME)
-  async addCardContent(
-    request: AddCardContentRequest,
-  ): Promise<AddCardContentResponse> {
-    const response = await this.cardService
-      .createCardContent({
-        cardId: request.cardId,
-        keywords: request.cardContent.keywords,
-        advice: request.cardContent.advice,
-      })
-      .then((result) => {
-        const response: AddCardContentResponse = {
-          message: 'Card content added successfully',
-          data: {
-            cardContent: {
-              id: result.id,
-              keywords: result.keywords,
-              advice: result.advice,
-              createdAt: result.created_at.toISOString(),
-            },
-          },
-        };
-        return response;
-      });
-    return response;
-  }
-
-  @GrpcMethod(CARD_SERVICE_NAME)
-  async addCardContents(
-    request: AddCardContentsRequest,
-  ): Promise<AddCardContentsResponse> {
-    return this.cardService
-      .createCardContents({
-        cardId: request.cardId,
-        contents: request.cardContents.map((content) => ({
-          keywords: content.keywords,
-          advice: content.advice,
-        })),
-      })
-      .then(() => {
-        const response: AddCardContentsResponse = {
-          message: 'Card contents added successfully',
-        };
-        return response;
-      });
-  }
-
-  @GrpcMethod(CARD_SERVICE_NAME)
-  async getCardByTitle(
-    request: GetCardByTitleRequest,
-  ): Promise<GetCardByTitleResponse> {
-    return this.cardService.getCard({ title: request.title }).then((result) => {
-      const response: GetCardByTitleResponse = {
-        message: 'Card found',
-        data: {
-          card: {
-            id: result.id,
-            title: result.title,
-            titleKr: result.title_kr,
-            createdAt: result.created_at.toISOString(),
-          },
-        },
-      };
-      return response;
+  async createCard(request: CreateCardRequest): Promise<CreateCardResponse> {
+    const response = await this.cardService.createCard({
+      title: request.title,
+      titleKr: request.titleKr,
     });
+
+    const timestamp: Timestamp = {
+      seconds: response.created_at.getTime() / 1000,
+      nanos: response.created_at.getMilliseconds() * 1000000,
+    };
+
+    return {
+      card: {
+        id: response.id,
+        title: response.title,
+        titleKr: response.title_kr,
+        createdAt: timestamp,
+      },
+    };
   }
 
   @GrpcMethod(CARD_SERVICE_NAME)
-  async getCardContents(
-    request: GetCardContentsRequest,
-  ): Promise<GetCardContentsResponse> {
-    return this.cardService
-      .getCardContents({ cardId: request.cardId })
-      .then((contents) => {
-        const response: GetCardContentsResponse = {
-          message: 'Card contents found',
-          data: {
-            cardContents: contents.map((content) => ({
-              id: content.id,
-              keywords: content.keywords,
-              advice: content.advice,
-              createdAt: content.created_at.toISOString(),
-            })),
-          },
-        };
-        return response;
-      });
+  async createCardContent(
+    request: CreateCardContentRequest,
+  ): Promise<CreateCardContentResponse> {
+    const response = await this.cardService.createCardContent({
+      cardId: request.cardId,
+      keywords: request.keywords,
+      advice: request.advice,
+    });
+
+    const cardCreatedAtTimestamp: Timestamp = {
+      seconds: response.created_at.getTime() / 1000,
+      nanos: response.created_at.getMilliseconds() * 1000000,
+    };
+
+    return {
+      cardContent: {
+        id: response.id,
+        keywords: response.keywords,
+        advice: response.advice,
+        createdAt: cardCreatedAtTimestamp,
+      },
+    };
   }
 
   @GrpcMethod(CARD_SERVICE_NAME)
-  async getCardContentById(
-    request: GetCardContentByIdRequest,
-  ): Promise<GetCardContentByIdResponse> {
-    return this.cardService
-      .getCardContent({ cardContentId: request.cardContentId })
-      .then((result) => {
-        const response: GetCardContentByIdResponse = {
-          message: 'Card content found',
-          data: {
-            cardContent: {
-              id: result.id,
-              keywords: result.keywords,
-              advice: result.advice,
-              createdAt: result.created_at.toISOString(),
-            },
-          },
-        };
-        return response;
-      });
+  async readCard(request: ReadCardRequest): Promise<ReadCardResponse> {
+    const card = await this.cardService.readCard({ title: request.title });
+    const cardContents = await this.cardService.readCardContents({
+      cardId: card.id,
+    });
+
+    const cardCreatedAtTimestamp: Timestamp = {
+      seconds: card.created_at.getTime() / 1000,
+      nanos: card.created_at.getMilliseconds() * 1000000,
+    };
+    const modifiedCardContents = cardContents.map((content) => {
+      const cardContentCreatedAtTimestamp: Timestamp = {
+        seconds: content.created_at.getTime() / 1000,
+        nanos: content.created_at.getMilliseconds() * 1000000,
+      };
+      return {
+        id: content.id,
+        keywords: content.keywords,
+        advice: content.advice,
+        createdAt: cardContentCreatedAtTimestamp,
+      };
+    });
+
+    return {
+      card: {
+        id: card.id,
+        title: card.title,
+        titleKr: card.title_kr,
+        createdAt: cardCreatedAtTimestamp,
+      },
+      cardContents: modifiedCardContents,
+    };
   }
 
   @GrpcMethod(CARD_SERVICE_NAME)
-  async updateCardTitle(
-    request: UpdateCardTitleRequest,
-  ): Promise<UpdateCardTitleResponse> {
-    return this.cardService
-      .updateCardTitle({
-        targetTitle: request.cardId,
-        title: request.title,
-        title_kr: request.titleKr,
-      })
-      .then((result) => {
-        const response: UpdateCardTitleResponse = {
-          message: 'Card title updated successfully',
-          data: {
-            card: {
-              id: result.id,
-              title: result.title,
-              titleKr: result.title_kr,
-              createdAt: result.created_at.toISOString(),
-            },
-          },
-        };
-        return response;
-      });
+  async updateCard(request: UpdateCardRequest): Promise<UpdateCardResponse> {
+    const response = await this.cardService.updateCardTitle({
+      cardId: request.id,
+      title: request.title,
+      titleKr: request.titleKr,
+    });
+
+    const timestamp: Timestamp = {
+      seconds: response.created_at.getTime() / 1000,
+      nanos: response.created_at.getMilliseconds() * 1000000,
+    };
+
+    return {
+      card: {
+        id: response.id,
+        title: response.title,
+        titleKr: response.title_kr,
+        createdAt: timestamp,
+      },
+    };
   }
 
   @GrpcMethod(CARD_SERVICE_NAME)
   async updateCardContent(
     request: UpdateCardContentRequest,
   ): Promise<UpdateCardContentResponse> {
-    return this.cardService
-      .updateCardContent({
-        cardContentId: request.cardContentId,
-        keywords: request.cardContent.keywords,
-        advice: request.cardContent.advice,
-      })
-      .then((result) => {
-        const response: UpdateCardContentResponse = {
-          message: 'Card content updated successfully',
-          data: {
-            cardContent: {
-              id: result.id,
-              keywords: result.keywords,
-              advice: result.advice,
-              createdAt: result.created_at.toISOString(),
-            },
-          },
-        };
-        return response;
-      });
+    const response = await this.cardService.updateCardContent({
+      cardContentId: request.id,
+      keywords: request.keywords,
+      advice: request.advice,
+    });
+
+    const cardCreatedAtTimestamp: Timestamp = {
+      seconds: response.created_at.getTime() / 1000,
+      nanos: response.created_at.getMilliseconds() * 1000000,
+    };
+
+    return {
+      cardContent: {
+        id: response.id,
+        keywords: response.keywords,
+        advice: response.advice,
+        createdAt: cardCreatedAtTimestamp,
+      },
+    };
   }
 
   @GrpcMethod(CARD_SERVICE_NAME)
   async deleteCard(request: DeleteCardRequest): Promise<DeleteCardResponse> {
-    return this.cardService.deleteCard({ title: request.title }).then(() => {
-      const response: DeleteCardResponse = {
-        message: 'Card deleted successfully',
-      };
-      return response;
-    });
+    await this.cardService.deleteCard({ id: request.id });
+    return;
   }
 
   @GrpcMethod(CARD_SERVICE_NAME)
   async deleteCardContent(
     request: DeleteCardContentRequest,
   ): Promise<DeleteCardContentResponse> {
-    return this.cardService
-      .deleteCardContent({ cardContentId: request.cardContentId })
-      .then(() => {
-        const response: DeleteCardContentResponse = {
-          message: 'Card content deleted successfully',
-        };
-        return response;
-      });
+    await this.cardService.deleteCardContent({ cardContentId: request.id });
+    return;
   }
 }
