@@ -27,8 +27,6 @@ export class OpenaiService {
         { role: 'user', content: cardname },
       ],
     });
-    console.log('generateKeywords');
-    console.log(response.choices[0].message.content);
 
     return response.choices[0].message.content.split(', ');
   }
